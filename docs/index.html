@@ -28,8 +28,8 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       padding: 20px;
       position: relative;
-      max-width: 100%;
-      width: 600px;
+      width: 100%;
+      max-width: 600px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -40,8 +40,7 @@
       border-radius: 20px;
       padding: 10px;
       width: 100%;
-      display: flex;
-      justify-content: center;
+      position: relative;
     }
 
     canvas {
@@ -51,8 +50,10 @@
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
-      max-width: 100%;
+      width: 100%;
       height: auto;
+      aspect-ratio: 5 / 3;
+      display: block;
     }
 
     .tv-label {
@@ -97,6 +98,7 @@
 
     .kinect-bar {
       width: 100%;
+      max-width: 600px;
       background: linear-gradient(to bottom, #222, #000);
       border-radius: 40px;
       box-shadow: inset 0 0 10px #111, 0 5px 20px rgba(0, 0, 0, 0.5);
@@ -141,17 +143,19 @@
       border-radius: 10px;
       border: 2px solid #fff;
       font-family: 'Courier New';
-      top: 80px;
+      top: 60px;
       left: 50%;
       transform: translateX(-50%);
       display: none;
-      z-index: 2;
+      z-index: 5;
+      font-size: 14px;
+      text-align: center;
+      white-space: nowrap;
     }
 
-    /* Responsive design */
+    /* Responsive Design */
     @media (max-width: 768px) {
       .tv-frame {
-        width: 100%;
         border-width: 6px;
         padding: 10px;
       }
@@ -165,9 +169,16 @@
         font-size: 10px;
       }
 
+      .tv-label {
+        font-size: 12px;
+        bottom: 8px;
+        left: 15px;
+      }
+
       #speechBubble {
-        font-size: 10px;
+        font-size: 12px;
         padding: 4px 8px;
+        top: 40px;
       }
     }
   </style>
@@ -177,7 +188,9 @@
 <div class="tv-frame">
   <div class="screen-border">
     <canvas id="petCanvas" width="500" height="300"></canvas>
+    <div id="speechBubble">Yum!</div>
   </div>
+
   <div class="tv-label">PET TV</div>
 
   <div class="knobs">
@@ -216,7 +229,6 @@
 <audio id="walkSound" src="assets/walk.mp3" preload="auto"></audio>
 <audio id="noSound" src="assets/no.mp3" preload="auto"></audio>
 
-<div id="speechBubble">Yum!</div>
 <script src="script.js"></script>
 </body>
 </html>
