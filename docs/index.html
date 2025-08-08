@@ -1,173 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
- <link rel="stylesheet" href="indexstyle.css">
-  <title>Kakeibo Budget App</title>
-  
+  <meta charset="UTF-8">
+  <title>Pet Simulator TV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: #f0ebe3;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .tv-frame {
+      background: #3e2723;
+      border: 10px solid #2d1b0f;
+      border-radius: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .screen-border {
+      background: #000;
+      border-radius: 20px;
+      padding: 10px;
+      width: 100%;
+      position: relative;
+    }
+
+    canvas {
+      image-rendering: pixelated;
+      background-color: #222;
+      border-radius: 10px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 5 / 3;
+      display: block;
+    }
+
+    .tv-label {
+      position: absolute;
+      bottom: 10px;
+      left: 20px;
+      color: #f0e68c;
+      font-weight: bold;
+      font-size: 16px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    .knobs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .knob-control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .knobs button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ddd, #999);
+      border: 2px solid #666;
+      cursor: pointer;
+      box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
+    }
+
+    .knobs h3 {
+      font-size: 12px;
+      color: #3e2723;
+      margin: 5px 0 0;
+    }
+
+    .kinect-bar {
+      width: 100%;
+      max-width: 600px;
+      background: linear-gradient(to bottom, #222, #000);
+      border-radius: 40px;
+      box-shadow: inset 0 0 10px #111, 0 5px 20px rgba(0, 0, 0, 0.5);
+      margin-top: 20px;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 10px;
+    }
+
+    .stat {
+      flex: 1 1 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+      font-size: 12px;
+    }
+
+    .bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #444;
+      margin-top: 4px;
+    }
+
+    .bar-inner {
+      height: 100%;
+      width: 100%;
+      transition: width 0.3s, background-color 0.3s;
+    }
+
+    #speechBubble {
+      position: absolute;
+      color: #fff;
+      font-weight: bold;
+      background: #222;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 2px solid #fff;
+      font-family: 'Courier New';
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      z-index: 5;
+      font-size: 14px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .tv-frame {
+        border-width: 6px;
+        padding: 10px;
+      }
+
+      .knobs button {
+        width: 30px;
+        height: 30px;
+      }
+
+      .knobs h3 {
+        font-size: 10px;
+      }
+
+      .tv-label {
+        font-size: 12px;
+        bottom: 8px;
+        left: 15px;
+      }
+
+      #speechBubble {
+        font-size: 12px;
+        padding: 4px 8px;
+        top: 40px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <div class="topbar">
-      <div class="shape-container">
-        <div class="circle"></div>
-        <div class="square"></div>
-        <div class="triangle"></div>
-      </div>
+
+<div class="tv-frame">
+  <div class="screen-border">
+    <canvas id="petCanvas" width="500" height="300"></canvas>
+    <div id="speechBubble">Yum!</div>
+  </div>
+
+  <div class="tv-label">PET TV</div>
+
+  <div class="knobs">
+    <div class="knob-control">
+      <button onclick="feedPet()" title="Feed"></button>
+      <h3>Feed</h3>
     </div>
-
-    <div class="main">
-      <div class="left-bar">
-        <h1>Kakeibo</h1>
-        <div class="box1">
-          <div>
-            <h2 onclick="showSection('dashboard')">Dashboard</h2>
-            <h2 onclick="showSection('transactions')">Transactions</h2>
-            <h2 onclick="showSection('budget')">Budget Planner</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="content-sections">
-        <!-- DASHBOARD -->
-        <div id="dashboard" class="section active">
-          <div class="left">
-            <div class="box">
-              <h2 id="totalSalary">Monthly Salary: ₹0</h2>
-              <div class="income-item"><span>Paycheck</span><input type="number" value="80000" disabled></div>
-              <div class="income-item"><span>Rent</span><input type="number" value="20000" disabled></div>
-              <div class="income-item"><span>Part time</span><input type="number" value="25000" disabled></div>
-              <button id="editBtn">Edit</button>
-            </div>
-            <div class="boxdown">
-
-
-             <div class="stats-header">
-  <span class="stats-title">Expense Stats</span>
-  <select id="rangeSelect" class="range-select">
-    <option value="day">Day</option>
-    <option value="month">Month</option>
-    <option value="year">Year</option>
-  </select>
-</div>
-
-              <canvas id="expenseChart"></canvas>
-            </div>
-          </div>
-          <div class="right">
-            <div class="box">
-              <h2>Overview</h2>
-              <div class="income-item"><span>Spent:</span><input type="number" id="spentInput" value="25000" disabled></div>
-              <div class="income-item"><span>Remaining:</span><span id="remainingDisplay">₹0</span></div>
-              <button id="editSpentBtn">Edit</button>
-            </div>
-            <div class="boxdown">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="margin: 0;">Monthly Expenses</h2>
-                <button id="editExpensesBtn">Edit</button>
-              </div>
-              <div class="income-item"><span>Clothes</span><input type="number" value="5000" disabled id="clothesInput"></div>
-              <div class="income-item"><span>Groceries</span><input type="number" value="10000" disabled id="groceriesInput"></div>
-              <div class="income-item"><strong>Total</strong><span id="expensesTotal">₹15,000</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TRANSACTIONS -->
-        <div id="transactions" class="section">
-          <div class="right" style="width: 100%; ">
-            <div class="box" style="padding: 0; overflow-y: auto; height: 100%;">
-              <div class="transactions-header">
-                <h2>Monthly Transactions</h2>
-                <div class="actions">
-                  <button onclick="addTransaction()">Add</button>
-                  <button onclick="editTransaction()">Edit</button>
-                  <button onclick="deleteTransaction()">Delete</button>
-                </div>
-              </div>
-              <div class="filter-bar">
-                <label for="filter">Filter by</label>
-                <select id="filter">
-                  <option value="all">All</option>
-                  <option value="food">Food</option>
-                  <option value="transport">Transport</option>
-                  <option value="utilities">Utilities</option>
-                </select>
-              </div>
-              <div class="transactions-table-wrapper">
-  <table class="transactions-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Date</th>
-        <th>Category</th>
-        <th>Amount</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody id="transactionsBody">
-      <!-- Dynamic rows here -->
-    </tbody>
-  </table>
-</div>
-
-            </div>
-          </div>
-        </div>
-
-       <!-- BUDGET -->
-<div id="budget" class="section">
-  <div class="budget-container">
-    <div class="budget-top">
-      <div class="budget-summary">
-        <div>Income <span id="incomeValue">₹0</span></div>
-        <div>Bills Total <span id="billsValue">₹0</span></div>
-        <div>Expenses Total <span id="expensesValue">₹0</span></div>
-      </div>
-      <div class="budget-chart">
-        <h4>Left to Spend</h4>
-        <div class="chart-wrapper">
-          <canvas id="budgetPie"></canvas>
-        </div>
-      </div>
+    <div class="knob-control">
+      <button onclick="exercisePet()" title="Exercise"></button>
+      <h3>Walk</h3>
     </div>
-
-    <div class="budget-bottom">
-      <!-- BILLS SECTION -->
-      <div class="budget-section">
-        <button onclick="addBill()">Add</button>
-        <div class="budget-table-box">
-          <h2>Bills</h2>
-          <table id="billTable">
-            <thead><tr><th>Due</th><th>Budget</th><th>Actual</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- EXPENSES SECTION -->
-      <div class="budget-section">
-        <button onclick="addExpense()">Add</button>
-        <div class="budget-table-box">
-          <h2>Expenses</h2>
-          <table id="expenseTable">
-            <thead><tr><th>Budget</th><th>Actual</th><th>Left</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
+    <div class="knob-control">
+      <button onclick="sleepPet()" title="Sleep"></button>
+      <h3>Sleep</h3>
     </div>
   </div>
 </div>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="kinect-bar">
+  <div class="stat hunger">
+    Hunger
+    <div class="bar"><div class="bar-inner" id="hungerBar"></div></div>
+  </div>
+  <div class="stat happiness">
+    Happiness
+    <div class="bar"><div class="bar-inner" id="happinessBar"></div></div>
+  </div>
+  <div class="stat energy">
+    Energy
+    <div class="bar"><div class="bar-inner" id="energyBar"></div></div>
+  </div>
+</div>
+
+<audio id="eatingSound" src="assets/eat.mp3" preload="auto"></audio>
+<audio id="whistleSound" src="assets/whistle.mp3" preload="auto"></audio>
+<audio id="walkSound" src="assets/walk.mp3" preload="auto"></audio>
+<audio id="noSound" src="assets/no.mp3" preload="auto"></audio>
+
 <script src="script.js"></script>
-
-
-
 </body>
 </html>
